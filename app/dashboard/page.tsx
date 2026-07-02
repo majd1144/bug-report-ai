@@ -11,29 +11,48 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  async function loadData() {
-    setLoading(true);
+    async function loadData() {
+      setLoading(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (user) {
-      setEmail(user.email || "");
+      if (user) {
+        setEmail(user.email || "");
 
-      const { data } = await supabase
-        .from("bug_reports")
-        .select("*")
-        .eq("user_id", user.id);
+        const { data } = await supabase
+          .from("bug_reports")
+          .select("*")
+          .eq("user_id", user.id);
 
-      setReports(data || []);
+        // 🔥 IMPORTANT FIX: normalize steps
+        const normalized = (data || []).map((r) => ({
+          ...r,
+          steps_to_reproduce: safeParseSteps(r.steps_to_reproduce),
+        }));
+
+        setReports(normalized);
+      }
+
+      setLoading(false);
     }
 
-    setLoading(false);
-  }
+    loadData();
+  }, []);
 
-  loadData();
-}, []);
+  // ✅ FIX: handle string or array
+  function safeParseSteps(steps: any) {
+    if (!steps) return [];
+
+    if (Array.isArray(steps)) return steps;
+
+    try {
+      return JSON.parse(steps);
+    } catch {
+      return [];
+    }
+  }
 
   async function logout() {
     await supabase.auth.signOut();
@@ -71,51 +90,56 @@ export default function DashboardPage() {
           <div className="mt-6">
             <BugReportForm />
           </div>
+
+          {/* STATS */}
           <div className="grid grid-cols-4 gap-3 mt-6">
 
-<div className="p-4 border rounded-xl">
-  <p className="text-sm text-gray-500">Total</p>
-  <p className="text-xl font-bold">{reports.length}</p>
-</div>
+            <div className="p-4 border rounded-xl">
+              <p className="text-sm text-gray-500">Total</p>
+              <p className="text-xl font-bold">{reports.length}</p>
+            </div>
 
-<div className="p-4 border rounded-xl">
-  <p className="text-sm text-gray-500">Critical</p>
-  <p className="text-xl font-bold">
-    {reports.filter(r => r.severity === "Critical").length}
-  </p>
-</div>
+            <div className="p-4 border rounded-xl">
+              <p className="text-sm text-gray-500">Critical</p>
+              <p className="text-xl font-bold">
+                {reports.filter(r => r.severity === "Critical").length}
+              </p>
+            </div>
 
-<div className="p-4 border rounded-xl">
-  <p className="text-sm text-gray-500">High</p>
-  <p className="text-xl font-bold">
-    {reports.filter(r => r.severity === "High").length}
-  </p>
-</div>
+            <div className="p-4 border rounded-xl">
+              <p className="text-sm text-gray-500">High</p>
+              <p className="text-xl font-bold">
+                {reports.filter(r => r.severity === "High").length}
+              </p>
+            </div>
 
-<div className="p-4 border rounded-xl">
-  <p className="text-sm text-gray-500">Medium / Low</p>
-  <p className="text-xl font-bold">
-    {reports.filter(
-      r => r.severity === "Medium" || r.severity === "Low"
-    ).length}
-  </p>
-</div>
+            <div className="p-4 border rounded-xl">
+              <p className="text-sm text-gray-500">Others</p>
+              <p className="text-xl font-bold">
+                {reports.filter(
+                  r => r.severity === "Medium" || r.severity === "Low"
+                ).length}
+              </p>
+            </div>
+          </div>
 
-</div>
           {/* HISTORY */}
           <h2 className="text-xl font-bold mt-10">
             Your Bug Reports
           </h2>
+
           {loading && (
-  <p className="text-gray-500 mt-4">
-    Loading your bug reports...
-  </p>
-)}
-{!loading && reports.length === 0 && (
-  <p className="text-gray-500 mt-4">
-    No bug reports yet. Create your first one 🚀
-  </p>
-)}
+            <p className="text-gray-500 mt-4">
+              Loading your bug reports...
+            </p>
+          )}
+
+          {!loading && reports.length === 0 && (
+            <p className="text-gray-500 mt-4">
+              No bug reports yet. Create your first one 🚀
+            </p>
+          )}
+
           <div className="mt-6 space-y-3">
             {reports.map((r: any) => (
               <div
@@ -135,16 +159,17 @@ export default function DashboardPage() {
 
       {/* MODAL */}
       {selectedReport && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">          <div className="bg-white w-full max-w-2xl rounded-2xl p-6 relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
 
-            {/* Close */}
+          <div className="bg-white w-full max-w-2xl rounded-2xl p-6 relative">
+
             <button
               onClick={() => setSelectedReport(null)}
               className="absolute top-3 right-3 text-gray-500"
             >
               ✕
             </button>
-           
+
             <h2 className="text-2xl font-bold mb-2">
               {selectedReport.title}
             </h2>
@@ -154,32 +179,34 @@ export default function DashboardPage() {
             </p>
 
             <div className="mb-3">
-  <h3 className="font-semibold">Description</h3>
-  <p>{selectedReport.description}</p>
-</div>
-<div className="mb-3">
-  <h3 className="font-semibold">Expected</h3>
-  <p>{selectedReport.expected_result || selectedReport.expectedResult}</p>
-</div>
-<div className="mb-3">
-  <h3 className="font-semibold">Actual</h3>
-  <p>{selectedReport.actual_result || selectedReport.actualResult}</p>
-</div>
-<div className="mb-3">
-  <h3 className="font-semibold">Steps to Reproduce</h3>
-  <div className="mb-3">
-  <h3 className="font-semibold">Steps to Reproduce</h3>
+              <h3 className="font-semibold">Description</h3>
+              <p>{selectedReport.description}</p>
+            </div>
 
-  {Array.isArray(selectedReport.steps_to_reproduce) ? (
-    <ol className="list-decimal ml-5">
-      {selectedReport.steps_to_reproduce.map((step: string, i: number) => (
-        <li key={i}>{step}</li>
-      ))}
-    </ol>
-  ) : (
-    <p>{selectedReport.steps_to_reproduce || "N/A"}</p>
-  )}
-</div></div>
+            <div className="mb-3">
+              <h3 className="font-semibold">Expected</h3>
+              <p>{selectedReport.expected_result || selectedReport.expectedResult}</p>
+            </div>
+
+            <div className="mb-3">
+              <h3 className="font-semibold">Actual</h3>
+              <p>{selectedReport.actual_result || selectedReport.actualResult}</p>
+            </div>
+
+            <div className="mb-3">
+              <h3 className="font-semibold">Steps to Reproduce</h3>
+
+              {Array.isArray(selectedReport.steps_to_reproduce) ? (
+                <ol className="list-decimal ml-5">
+                  {selectedReport.steps_to_reproduce.map((step: string, i: number) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              ) : (
+                <p>N/A</p>
+              )}
+            </div>
+
           </div>
         </div>
       )}
