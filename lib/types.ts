@@ -12,8 +12,7 @@ export interface GenerateBugReportRequest {
   bugDescription: string;
 }
 
-export type BugReportSource = "openai" | "mock";
-
+export type BugReportSource = "openai" | "mock" | "gemini";
 export interface GenerateBugReportResponse {
   report: BugReport;
   source: BugReportSource;
