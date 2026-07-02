@@ -1,4 +1,4 @@
-import { generateBugReportWithOpenAI, hasOpenAIKey } from "./openai";
+import { generateBugReportWithGemini } from "./gemini";
 import { generateMockBugReport } from "./mock-ai";
 import type { BugReport, BugReportSource } from "./types";
 
@@ -7,14 +7,42 @@ export interface GenerateBugReportResult {
   source: BugReportSource;
 }
 
+// تنظيف النصوص
+function cleanText(text: string) {
+  if (!text) return "";
+  return text.trim().replace(/\s+/g, " ");
+}
+
 export async function generateBugReport(
   bugDescription: string
 ): Promise<GenerateBugReportResult> {
-  if (hasOpenAIKey()) {
-    const report = await generateBugReportWithOpenAI(bugDescription);
-    return { report, source: "openai" };
-  }
+  try {
+    // 🟢 Gemini AI
+    const raw = await generateBugReportWithGemini(bugDescription);
 
-  const report = await generateMockBugReport(bugDescription);
-  return { report, source: "mock" };
+    const report: BugReport = {
+      ...raw,
+      title: cleanText(raw.title) || "Bug Report",
+      description: cleanText(raw.description),
+      expectedResult: cleanText(raw.expectedResult),
+      actualResult: cleanText(raw.actualResult),
+    };
+
+    return { report, source: "gemini" };
+  } catch (error) {
+    console.error("Gemini failed, using Mock AI:", error);
+
+    // 🟡 Fallback
+    const raw = await generateMockBugReport(bugDescription);
+
+    const report: BugReport = {
+      ...raw,
+      title: cleanText(raw.title) || "Bug Report",
+      description: cleanText(raw.description),
+      expectedResult: cleanText(raw.expectedResult),
+      actualResult: cleanText(raw.actualResult),
+    };
+
+    return { report, source: "mock" };
+  }
 }

@@ -2,13 +2,23 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-
+import { useEffect } from "react";
 export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+  
+      if (user) {
+        window.location.href = "/dashboard";
+      }
+    }
+  
+    checkUser();
+  }, []);
   async function signUp() {
     setLoading(true);
 
