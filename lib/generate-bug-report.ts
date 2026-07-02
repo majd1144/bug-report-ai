@@ -28,7 +28,7 @@ export async function generateBugReport(
       actualResult: cleanText(raw.actualResult),
     };
 
-    return { report, source: "mock" };
+    return { report, source: "gemini" };
   } catch (error) {
     console.error("Gemini failed, using Mock AI:", error);
 
