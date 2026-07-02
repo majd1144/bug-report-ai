@@ -136,7 +136,7 @@ export default function DashboardPage() {
 
           {!loading && reports.length === 0 && (
             <p className="text-gray-500 mt-4">
-              No bug reports yet. Create your first one 🚀
+              No bug reports yet. Create your first onee 🚀
             </p>
           )}
 
