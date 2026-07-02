@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐞 AI Bug Report System
 
-## Getting Started
+An AI-powered SaaS-style web application that transforms unstructured bug descriptions into professional QA-ready bug reports.
 
-First, run the development server:
+The application uses Google Gemini AI to generate structured bug reports, allowing QA engineers and testers to save, manage, and export reports efficiently.
+
+---
+
+## 🚀 Live Demo
+
+🔗 https://your-vercel-url.vercel.app
+
+---
+
+## ✨ Features
+
+- 🔐 User Authentication (Supabase Auth)
+- 🤖 AI-powered bug report generation using Google Gemini
+- 📋 Structured bug reports
+- 📌 Automatic Severity & Priority detection
+- 📝 Bug report history
+- 📄 Export bug reports to PDF
+- 📋 Copy report to clipboard
+- 📊 Dashboard with bug statistics
+- ☁️ Cloud database using Supabase
+- 📱 Responsive UI built with Tailwind CSS
+
+---
+
+## 🖼️ Screenshots
+
+### Login
+
+(Add screenshot)
+
+### Dashboard
+
+(Add screenshot)
+
+### Generated Bug Report
+
+(Add screenshot)
+
+---
+
+## 🛠️ Tech Stack
+
+- Next.js 15
+- React
+- TypeScript
+- Tailwind CSS
+- Supabase
+- Google Gemini API
+- jsPDF
+
+---
+
+## ⚙️ Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/majd1144/bug-report-ai.git
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Create an environment file
+
+```env
+GEMINI_API_KEY=your_key
+
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+```
+
+Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📂 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+components/
+lib/
+public/
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 💡 Future Improvements
 
-## Deploy on Vercel
+- Team workspaces
+- AI bug categorization
+- Jira integration
+- Bug search & filtering
+- Email notifications
+- Analytics dashboard
+- Dark mode
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👨‍💻 Author
+
+**Majd Almanaseer**
+
+- GitHub: https://github.com/majd1144
+- LinkedIn: https://linkedin.com/in/majd-almanaseer
+
